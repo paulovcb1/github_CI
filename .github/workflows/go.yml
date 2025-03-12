@@ -9,10 +9,11 @@ on:
 jobs:
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         go_version: ['1.18', '1.17', '1.20']
+        os: [ubuntu-latest, windows-latest, macos-latest]
         
     steps:
     - uses: actions/checkout@v4
@@ -21,11 +22,18 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go_version }}
-    
-    - name: Start Database
+
+    - name: Start Database (Linux/Mac)
+      if: runner.os != 'Windows'
       run: docker compose up -d
-      
-    - name: Wait for Database to be Ready
+
+    - name: Start Database (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        docker-compose up -d
+
+    - name: Wait for Database to be Ready (Linux/Mac)
+      if: runner.os != 'Windows'
       run: |
         for i in {1..10}; do
           nc -z localhost 5432 && echo "Banco está pronto!" && exit 0
@@ -34,8 +42,25 @@ jobs:
         done
         echo "Banco de dados não iniciou a tempo" && exit 1
 
+    - name: Wait for Database to be Ready (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $count = 0
+        while ($count -lt 10) {
+          if (Test-NetConnection -ComputerName localhost -Port 5432 -InformationLevel Quiet) {
+            echo "Banco está pronto!"
+            exit 0
+          }
+          echo "Aguardando banco de dados..."
+          Start-Sleep -Seconds 5
+          $count++
+        }
+        echo "Banco de dados não iniciou a tempo"
+        exit 1
+
     - name: Verify Database Logs
-      if: failure()
+      if: failure() && runner.os != 'Windows'
       run: docker logs $(docker ps -q --filter "ancestor=postgres")
 
     - name: Run Tests
@@ -45,8 +70,12 @@ jobs:
       run: go build -v main.go
       
   build: 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     needs: test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
     steps:
     - uses: actions/checkout@v3
     
