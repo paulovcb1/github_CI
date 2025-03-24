@@ -9,7 +9,7 @@ on:
 jobs:
 
   test:
-    runs-on: macos-latest  # Rodando no macOS
+    runs-on: macos-latest 
     strategy:
       matrix:
         go_version: ['1.18', '1.17', '1.20']
@@ -29,16 +29,15 @@ jobs:
         docker-compose --version
 
     - name: Create-DB
-      run: docker-compose up -d  # Levanta o ambiente do Docker
-
+      run: docker-compose up -d  
     - name: Test
-      run: go test -v main.go  # Executa os testes
+      run: go test -v main.go  
 
     - name: Build
-      run: go build -v main.go  # Faz o build do projeto
+      run: go build -v main.go  
       
   build: 
-    runs-on: macos-latest  # Rodando no macOS
+    runs-on: macos-latest 
     needs: test
     steps:
     - uses: actions/checkout@v3
