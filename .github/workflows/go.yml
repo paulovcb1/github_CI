@@ -24,7 +24,7 @@ jobs:
       
 
     - name: Create-DB
-      run: docker-compose up -d  # Levanta o ambiente do Docker
+      run: docker compose up -d  # Levanta o ambiente do Docker
 
     - name: Test
       run: go test -v main.go  # Executa os testes
