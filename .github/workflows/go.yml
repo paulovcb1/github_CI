@@ -23,9 +23,9 @@ jobs:
         go-version: ${{ matrix.go_version }}
       
     - name: Set up Docker
-      run: 
+      run: | 
         docker --version
-        docker-compose --version
+        
 
     - name: Create-DB
       run: docker-compose up -d  
