@@ -1,6 +1,3 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
 name: Go
 
 on:
@@ -12,7 +9,7 @@ on:
 jobs:
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest  # Rodando no macOS
     strategy:
       matrix:
         go_version: ['1.18', '1.17', '1.20']
@@ -25,21 +22,25 @@ jobs:
       with:
         go-version: ${{ matrix.go_version }}
       
+    - name: Set up Docker
+      run: |
+        # Garantir que o Docker está rodando corretamente
+        docker --version
+        docker-compose --version
 
     - name: Create-DB
-      run: docker compose up -d
+      run: docker-compose up -d  # Levanta o ambiente do Docker
 
     - name: Test
-      run: go test -v main.go
-      
+      run: go test -v main.go  # Executa os testes
+
     - name: Build
-      run: go build -v main.go
+      run: go build -v main.go  # Faz o build do projeto
       
   build: 
-    runs-on:  macos-latest
+    runs-on: macos-latest  # Rodando no macOS
     needs: test
     steps:
     - uses: actions/checkout@v3
     - name: Build
       run: go build -v main.go
-      
