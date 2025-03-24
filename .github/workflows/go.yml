@@ -12,11 +12,10 @@ on:
 jobs:
 
   test:
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: macos-latest
     strategy:
       matrix:
         go_version: ['1.18', '1.17', '1.20']
-        runs-on: ['ubuntu-latest', 'windows-latest', 'macos-latest']
         
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +27,7 @@ jobs:
       
 
     - name: Create-DB
-      run: docker compose up -d
+      run: docker-compose up -d
 
     - name: Test
       run: go test -v ./...
@@ -37,7 +36,7 @@ jobs:
       run: go build -v main.go
       
   build: 
-    runs-on: ubuntu-latest
+    runs-on:  macos-latest
     needs: test
     steps:
     - uses: actions/checkout@v3
