@@ -23,7 +23,7 @@ jobs:
         go-version: ${{ matrix.go_version }}
       
     - name: Set up Docker
-      run: | 
+      run: 
         docker --version
         
 
