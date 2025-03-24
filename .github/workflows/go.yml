@@ -23,8 +23,7 @@ jobs:
         go-version: ${{ matrix.go_version }}
       
     - name: Set up Docker
-      run: |
-        # Garantir que o Docker está rodando corretamente
+      run: 
         docker --version
         docker-compose --version
 
